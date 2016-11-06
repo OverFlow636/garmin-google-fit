@@ -1,0 +1,29 @@
+{
+  "name": "garmin-google-fit",
+  "version": "1.0.0",
+  "description": "Export weights from garmin connect into google fit",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-session": "^2.0.0-alpha.1",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "googleapis": "^14.1.0",
+    "handlebars": "^4.0.5",
+    "request": "^2.78.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OverFlow636/garmin-google-fit.git"
+  },
+  "author": "Joey Jan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OverFlow636/garmin-google-fit/issues"
+  },
+  "homepage": "https://github.com/OverFlow636/garmin-google-fit#readme"
+}

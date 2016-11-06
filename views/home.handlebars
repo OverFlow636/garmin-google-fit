@@ -1,0 +1,88 @@
+<div class="callout large primary text-center">
+    <h1>Garmin Connect => Google Fit</h1>
+    <p>Import smart scale weights from Garmin Connect into Google Fit.</p>
+</div>
+
+<div class="row">
+    <div class="small-12 column">
+        {{#if message}}
+            <div class="callout {{message.class}}">
+                <h5>{{message.title}}</h5>
+                <p>{{message.message}}</p>
+            </div>
+        {{/if}}
+
+        <table>
+            <tr>
+                <th>Integration</th>
+                <th>Authorization</th>
+                <th>Data</th>
+            </tr>
+            <tr>
+                <td>Google Fit</td>
+                <td>
+                    {{#if session.googleAuth}}
+                        Authorized
+                    {{else}}
+                        <a href="/fit">Click here to Authorize</a>
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if session.googleAuth}}
+                        <a href="/googlefit">Get weights from google fit</a>
+                    {{/if}}
+                </td>
+            </tr>
+            <tr>
+                <td>Garmin Connect</td>
+                <td>
+                    {{#if session.garminCreds}}
+                            Saved
+                    {{else}}
+                        <form method="post">
+                            Username: <input type="text" name="username"><br>
+                            Password:<input type="password" name="password"><br>
+                            <input type="submit" value="Save">
+                        </form>
+                    {{/if}}
+                </td>
+                <td>
+                    {{#if session.garminCreds}}
+                        <a href="/gcweights">Get weights from garmin connect</a>
+                    {{/if}}
+                </td>
+            </tr>
+
+            {{#if session.garminCreds}}
+                {{#if  session.googleAuth}}
+
+                    <tr>
+                        <td>Google Fit Data Source</td>
+                        <td>
+                            {{#if session.dataSource}}
+                                Created
+                            {{else}}
+                                <a href="/adddatasource">Add data source</a>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <a href="/googlefitsources">View All</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Import Garmin weights to Google Fit</td>
+                        <td colspan="2">
+                            {{#if session.dataSource}}
+                                <a href="/importGarminToFit">Import</a>
+                            {{else}}
+                                Add Google Fit data source first.
+                            {{/if}}
+                        </td>
+                    </tr>
+
+                {{/if}}
+            {{/if}}
+        </table>
+    </div>
+</div>
