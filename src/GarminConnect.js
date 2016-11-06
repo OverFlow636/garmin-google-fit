@@ -22,7 +22,7 @@ module.exports = function getGarminWeights(username, password) {
         },
         method: 'POST'
       }, function (err, xhr) {
-        if (err || xhr.statusCode != 200) {
+        if (err || (xhr.statusCode != 200 && xhr.statusCode != 302)) {
           return reject('Could not post login page');
         }
 

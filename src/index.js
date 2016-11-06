@@ -137,7 +137,7 @@ app.get('/gcweights', function (req, res) {
       res.json(data)
     })
     .catch(err => {
-      if (err.indexOf('username or password')) {
+      if (err.indexOf('username or password') > -1) {
         req.session.garminCreds = null;
         return res.redirect('/?message=garminauth')
       }
