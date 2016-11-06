@@ -38,7 +38,7 @@ module.exports = function getGarminWeights(username, password) {
 
             requestJar(garminConnectPostAuth + 'ticket=ST-0' + ticket, function (err, xhr) {
               if (err || xhr.statusCode != 200) {
-                return reject('Could not get post auth page ' + garminConnectPostAuth + 'ticket=ST-0' + ticket + ' | result: ' + xhr.statusCode);
+                return reject('Could not get post auth page ' + garminConnectPostAuth + 'ticket=ST-0' + ticket + ' | result: ' + (xhr ? xhr.statusCode : 'noxhr'));
               }
 
               requestJar("https://connect.garmin.com/legacy/session", function (err, xhr) {
