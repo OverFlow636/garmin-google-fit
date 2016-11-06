@@ -141,6 +141,7 @@ app.get('/gcweights', function (req, res) {
         req.session.garminCreds = null;
         return res.redirect('/?message=garminauth')
       }
+      console.error(err);
       res.send(err);
     });
 });
