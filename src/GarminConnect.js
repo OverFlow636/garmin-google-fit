@@ -1,5 +1,5 @@
 const request = require('request');
-const garminConnectLogin = 'https://sso.garmin.com/sso/login?service=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect04&source=https%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.1-min.css&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&usernameShown=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=false';
+const garminConnectLogin = 'https://sso.garmin.com/sso/signin?service=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&webhost=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&source=https%3A%2F%2Fconnect.garmin.com%2Fsignin&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.2-min.css&privacyStatementUrl=https%3A%2F%2Fwww.garmin.com%2Fen-US%2Fprivacy%2Fconnect%2F&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=true&generateTwoExtraServiceTickets=false&generateNoServiceTicket=false&globalOptInShown=true&globalOptInChecked=false&mobile=false&connectLegalTerms=true&showTermsOfUse=false&showPrivacyPolicy=false&showConnectLegalAge=false&locationPromptShown=true&showPassword=true';
 const garminConnectPostAuth = 'https://connect.garmin.com/modern/?';
 const garminConnectWeights = 'https://connect.garmin.com/modern/proxy/userprofile-service/userprofile/personal-information/weightWithOutbound/filterByDay?from=0&until=9999999999999&_=1478359936529';
 
@@ -14,46 +14,48 @@ module.exports = function getGarminWeights(username, password) {
         return reject('Could not get login page' + xhr.statusCode);
       }
 
+      let csrf = xhr.body.substr(xhr.body.indexOf('"_csrf"') + 15);
+      csrf = csrf.substr(0, csrf.indexOf('"'));
+
       requestJar({
         uri: garminConnectLogin,
         form: {
           username,
           password,
           'embed': 'true',
-          'lt': 'e1s1',
-          '_eventId': 'submit',
-          'displayNameRequired': 'false'
+          '_csrf': csrf
         },
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          referer: 'https://sso.garmin.com/sso/signin?service=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&webhost=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&source=https%3A%2F%2Fconnect.garmin.com%2Fsignin%2F&redirectAfterAccountLoginUrl=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&redirectAfterAccountCreationUrl=https%3A%2F%2Fconnect.garmin.com%2Fmodern%2F&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&cssUrl=https%3A%2F%2Fstatic.garmincdn.com%2Fcom.garmin.connect%2Fui%2Fcss%2Fgauth-custom-v1.2-min.css&privacyStatementUrl=https%3A%2F%2Fwww.garmin.com%2Fen-US%2Fprivacy%2Fconnect%2F&clientId=GarminConnect&rememberMeShown=true&rememberMeChecked=false&createAccountShown=true&openCreateAccount=false&displayNameShown=false&consumeServiceTicket=false&initialFocus=true&embedWidget=false&generateExtraServiceTicket=true&generateTwoExtraServiceTickets=false&generateNoServiceTicket=false&globalOptInShown=true&globalOptInChecked=false&mobile=false&connectLegalTerms=true&showTermsOfUse=false&showPrivacyPolicy=false&showConnectLegalAge=false&locationPromptShown=true&showPassword=true'
+        }
       }, function (err, xhr) {
         if (err || (xhr.statusCode != 200 && xhr.statusCode != 302)) {
           return reject('Could not post login page');
         }
 
-        var loginSuccess = false;
-        xhr.headers['set-cookie'].forEach(function (cookie) {
-          if (cookie.indexOf('CASTGC') === 0) {
-            loginSuccess = true;
-            var ticket = cookie.substr(11, cookie.indexOf(';') - 11);
-
-            requestJar(garminConnectPostAuth + 'ticket=ST-0' + ticket, function (err, xhr) {
-              if (err || xhr.statusCode != 200) {
-                return reject('Could not get post auth page ' + garminConnectPostAuth + 'ticket=ST-0' + ticket + ' | result: ' + (xhr ? xhr.statusCode : 'noxhr'));
-              }
-
-              requestJar(garminConnectWeights, function (err, xhr, body) {
-                if (err || xhr.statusCode != 200) {
-                  return reject('Could not get weight data', xhr.statusCode);
-                }
-
-                resolve(JSON.parse(body));
-              });
-            });
-          }
-        });
-        if (!loginSuccess) {
-          reject('Bad username or password, could not get ticket # from cookie');
+        const ticketLocation = xhr.body.indexOf('?ticket=')
+        if (ticketLocation === -1) {
+          return reject('Bad username or password')
         }
+
+        let ticket = xhr.body.substr(ticketLocation + 8);
+        ticket = ticket.substr(0, ticket.indexOf('"'));
+
+        requestJar(garminConnectPostAuth + 'ticket=' + ticket, function (err, xhr) {
+          if (err || xhr.statusCode != 200) {
+            return reject('Could not get post auth page ' + garminConnectPostAuth + 'ticket=ST-0' + ticket + ' | result: ' + (xhr ? xhr.statusCode : 'noxhr'));
+          }
+
+          requestJar(garminConnectWeights, function (err, xhr, body) {
+            if (err || xhr.statusCode != 200) {
+              return reject('Could not get weight data', xhr.statusCode);
+            }
+
+            resolve(JSON.parse(body));
+          });
+        });
+        
       });
     });
   });

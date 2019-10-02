@@ -1,29 +1,29 @@
 'use strict';
 
-const app              = require('express')();
+const app = require('express')();
 const getGarminWeights = require('./GarminConnect');
-const googleFit        = require('./GoogleFit');
-const messages         = {
-  0              : false,
-  success        : {
-    title  : 'Successful Import',
+const googleFit = require('./GoogleFit');
+const messages = {
+  0: false,
+  success: {
+    title: 'Successful Import',
     message: 'Garmin Connect weights were imported into Google Fit!',
-    class  : 'success'
+    class: 'success'
   },
   nothingToImport: {
-    title  : 'No new data to import',
+    title: 'No new data to import',
     message: 'Garmin Connect does not have any new weights to import.',
-    class  : 'warning'
+    class: 'warning'
   },
-  added          : {
-    title  : 'Google Fit Data Source Created',
+  added: {
+    title: 'Google Fit Data Source Created',
     message: 'Successfully created a data source on Google Fit',
-    class  : 'success'
+    class: 'success'
   },
-  garminauth     : {
-    title  : 'Garmin Connect',
+  garminauth: {
+    title: 'Garmin Connect',
     message: 'Your username or password was incorrect for Garmin Connect.',
-    class  : 'error'
+    class: 'error'
   }
 };
 
@@ -34,12 +34,12 @@ app.engine('handlebars', require('express-handlebars')({
 app.set('view engine', 'handlebars');
 
 app.use(require('body-parser')
-  .urlencoded({extended: false}));
+  .urlencoded({ extended: false }));
 
 app.use(require('cookie-session')({
-  name   : 'session',
+  name: 'session',
   expires: new Date('2100-1-1'),
-  keys   : ['daffdafdsafdsafdsafsafsadhggfdhhgfhgfdhgfd', 'qrerrqewreqwreqwreqwrqwevvzvczxvcxvcxvcxvczxvczx']
+  keys: ['daffdafdsafdsafdsafsafsadhggfdhhgfhgfdhgfd', 'qrerrqewreqwreqwreqwrqwevvzvczxvcxvcxvcxvczxvczx']
 }));
 
 app.use(function (req, res, next) {
@@ -146,6 +146,6 @@ app.get('/gcweights', function (req, res) {
     });
 });
 
-app.listen(2222, function () {
-  console.log('Example app listening on port 2222!')
+app.listen(8085, function () {
+  console.log('garmin-google-fit listening on port 8085!')
 });
