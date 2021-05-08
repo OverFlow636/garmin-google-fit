@@ -9,7 +9,7 @@
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "googleapis": "^14.1.0",
-    "handlebars": "^4.4.0",
+    "handlebars": "^4.7.7",
     "request": "^2.78.0"
   },
   "devDependencies": {},
