@@ -7,7 +7,7 @@
     "body-parser": "^1.15.2",
     "cookie-session": "^2.0.0-alpha.1",
     "express": "^4.14.0",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "^5.3.1",
     "googleapis": "^14.1.0",
     "handlebars": "^4.4.0",
     "request": "^2.78.0"
